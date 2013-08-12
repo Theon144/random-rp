@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>RandomRP - Roleplay with strangers!</title>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.2/mustache.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <link href="../css/main.css" rel="stylesheet">
+    <script src="/js/index.js"></script>
+    <script id="roomEntry" type="text/template">
+      {{#rooms}}
+      <div class="well well-small">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-10">
+              <strong>{{name}}</strong>
+            </div>
+            <div class="col-lg-2">
+              <i>Players:{{users}}</i>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-10">
+              Tags: {{#tags}}{{tags}}{{/tags}}{{^tags}}<i>none</i>{{/tags}}
+            </div>
+            <div class="col-lg-2">
+              <a class="btn btn-primary btn-xs stretch" href="/g/{{id}}">Join</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{/rooms}}
+      {{^rooms}}<strong>There are no rooms available. Would you like to start one?</strong>{{/rooms}}
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="navbar navbar-static-top">
+        <a class="navbar-brand" href="#">RandomRP</a>
+        <ul class="nav navbar-nav pull-right">
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="row">
+      <div class="col-lg-10 col-lg-offset-1">
+      <h1 class="text-center"><strong>Random roleplaying</strong></h1>
+      <div class="row">
+        <div class="col-lg-5">
+          <img src="img/I get the key.png" class="img-thumbnail img-responsive" >
+        </div>
+        <div class="col-lg-7">
+        <p class="lead">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. Donec ut libero sed arcu vehicula ultricies a non tortor.
+        </p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-7">
+        <p class="lead">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur. Donec ut libero sed arcu vehicula ultricies a non tortor.
+        </p>
+        </div>
+        <div class="col-lg-5">
+          <img src="img/I get the key.png" class="img-thumbnail img-responsive" >
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-2 col-lg-offset-5 text-center">
+          <button type="button" id="join" class="btn btn-primary btn-lg btn-block">Join a game</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-2 col-lg-offset-5 text-center">
+          <button type="button" id="showlist" class="btn btn-xs btn-block">Show room list</button>
+        </div>
+      </div>
+      </div>
+      </div>
+      <div class="modal fade" id="listmodal" >
+      <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 class="text-center">Room list</h3>
+        </div>
+      <div class="modal-body">
+        <span id="list">
+        Loading...
+        </span>
+        <button id="create" class="btn block">Create a new room</button>
+        <div id="newroomform" class="well">
+          <form class="form-horizontal" method="post" action="/create">
+            <div class="form-group">
+            <label class="col-lg-2 control-label">Name:</label>
+            <div class="col-lg-10">
+            <input name="name" class="form-control" type="text" placeholder="<%= placeholder[0] %>">
+            </div>
+            </div>
+            <div class="form-group">
+            <label class="col-lg-2 control-label">Tags:</label>
+            <div class="col-lg-10">
+            <input name="tags" type="text" class="form-control" placeholder="e.g. <%= placeholder[1] %>...">
+            </div>
+            </div>
+            <div class="form-group">
+            <div class="col-lg-offset-2 col-lg-10">
+            <input class="btn" type="submit" value="Submit">
+            </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      </div>
+      </div>
+      </div>
+    </div>  
+  </body>
+</html>

@@ -1,0 +1,9 @@
+.nick {
+  font-weight: bold;
+}
+
+#log {
+  margin-bottom: 0;
+  background-color: #efefef;
+  overflow: auto;
+}
