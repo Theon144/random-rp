@@ -2,6 +2,12 @@
   font-weight: bold;
 }
 
+.system {
+  font-color: grey;
+  font-style: italic;
+}
+
+
 #log {
   margin-bottom: 0;
   background-color: #efefef;

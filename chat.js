@@ -18,32 +18,48 @@ var room = function(id, chat, timeout, settings){
   this.timeout = timeout;
   this.settings = settings;
   this.users = [];
+  this.log = [];
 }
 
 room.prototype.join = function (socket){
   if (this.users.length == 0)
     clearTimeout(this.timeout);
 
-  this.users.push(socket);
   var Room = this;
   socket.get('nick', function(err, nick){
     Room.send({
       type: 'system',
-      message: 'join',
-      user: nick
+      message: 'user "'+nick+'" has joined the room'
     });
+    for (var i in Room.log){
+      socket.emit('msg', Room.log[i]);
+    }
+    Room.users.push({
+      nick: nick,
+      socket: socket
+    });
+    Room.chat.update();
   });
-  this.chat.update();
 }
 
 room.prototype.leave = function (socket){
-  this.users.splice(this.users.indexOf(socket), 1);
+  var index = -1;
+  for (var i in this.users){
+    if (this.users[i].socket == socket){
+      index = i;
+      break;
+    }
+  }
+  if (index == -1){
+    return false;
+  }
+
+  this.users.splice(index, 1);
   var Room = this;
   socket.get('nick', function(err, nick){
     Room.send({
       type: 'system',
-      message: 'leave',
-      user: nick
+      message: 'user "'+nick+'" has left the room'
     });
   });
   socket.set('room', null);
@@ -56,13 +72,16 @@ room.prototype.leave = function (socket){
   this.chat.update();
 }
 
-room.prototype.send = function(message, destination){
-  if (destination == undefined){
-    for (var i in this.users){
-      this.users[i].emit('msg', message);
-    }
-  } else {
-    //...
+room.prototype.send = function(message){
+  message.time = Date.now();
+
+  if (this.log.length == 10){
+    this.log.shift();
+  }
+  this.log.push(message);
+
+  for (var i in this.users){
+    this.users[i].socket.emit('msg', message);
   }
 }
 
@@ -75,7 +94,7 @@ chat.prototype.create = function (name, tags){
     var id = makeid();
   while (this.rooms[id] != null)
 
-  timeout = setTimeout(function(){ chat.remove(id, 'room empty') }, 10000);
+  timeout = setTimeout(function(){ chat.remove(id, 'room empty') }, 60000);
   this.rooms[id] = new room(id, this, timeout, { 
     name: name,
     tags: tags,

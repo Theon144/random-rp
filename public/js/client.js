@@ -13,13 +13,35 @@ function isRoll(string){
 $(document).ready(function(){
   resize();
   $(window).resize(resize);
-  var socket = io.connect('http://'+window.location.hostname);
+  $('#nickModal').modal('show');
 
-  socket.emit('chat', {
-    type: 'join',
-    nick: "chicken",
-    room: roomID
-   });
+  var socket = io.connect('http://'+window.location.hostname);
+  socket.on('chat', function(data){
+    if (data.status == 'err'){
+      alert(data.err);
+    } else {
+      switch (data.action){
+        case "join":
+          $('#nickModal').modal('hide');
+          break;
+      }
+    }
+  });
+
+
+  $('#join').click(function(){
+    socket.emit('chat', {
+      action: "join",
+      nick: $('#nick').val(),
+      room: roomID
+    });
+  });
+  $('#nick').keypress(function (e) {
+    if (e.which == 13) {
+      $('#join').click();
+      return false;
+    }
+  });
 
   $('#send').click(function(){
     var message = $('#outMsg').val();
@@ -31,10 +53,17 @@ $(document).ready(function(){
           message: message
         });
       } else {
-        socket.emit('msg', {
-          type: "chat",
-          message: message
-        });
+        if (message.slice(0, 4) == '/me '){
+          socket.emit('msg', {
+            type: "me",
+            message: message.slice(4)
+          });
+        } else {
+          socket.emit('msg', {
+            type: "chat",
+            message: message
+          });
+        }
       }
     }
   });
@@ -46,6 +75,20 @@ $(document).ready(function(){
   });
 
   socket.on('msg', function(data){
-    $('#log').append(Mustache.render($('#messageTemplate').html(), data));
+    switch (data.type){
+      case "chat": 
+        $('#log').append(Mustache.render($('#messageTemplate').html(), data));
+        break;
+      case "me": 
+        $('#log').append(Mustache.render($('#meTemplate').html(), data));
+        break;
+      case "roll": 
+        $('#log').append(Mustache.render($('#rollTemplate').html(), data));
+        break;
+      case "system": 
+        $('#log').append(Mustache.render($('#systemTemplate').html(), data));
+        break;
+    }
+    $('#log').scrollTop(9001);
   });
 });
