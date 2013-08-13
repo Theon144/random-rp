@@ -11,5 +11,6 @@
 #log {
   margin-bottom: 0;
   background-color: #efefef;
-  overflow: auto;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }

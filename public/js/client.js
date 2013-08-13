@@ -4,7 +4,7 @@ function resize () {
 }
 
 function isRoll(string){
- return (string.search("^([()+/*0-9-]*([0-9]+d[0-9]+)[()+/*0-9-]*)+$") != -1) 
+ return (string.search("^([()+/*0-9-]*([0-9]+d[0-9F]+)[()+/*0-9-]*)+$") != -1) 
  // The regex above should match everything that looks like a dice roll/expression.
  // I had a complete regex, but it was this 70+ character abomination, so I rather
  // made a relatively simpler one.
@@ -43,10 +43,12 @@ $(document).ready(function(){
     }
   });
 
+  var prevMessage = "";
   $('#send').click(function(){
     var message = $('#outMsg').val();
     $('#outMsg').val('');
     if (message != ""){
+      prevMessage = message;
       if (isRoll(message)){
         socket.emit('msg', {
           type: "roll",
@@ -68,9 +70,16 @@ $(document).ready(function(){
     }
   });
   $('#outMsg').keypress(function (e) {
-    if (e.which == 13) {
-      $('#send').click();
-      return false;
+    switch (e.keyCode){
+      case 13:
+        $('#send').click();
+        return false;
+      case 38:
+        $('#outMsg').val(prevMessage);
+        return false;
+      case 40:
+        $('#outMsg').val('');
+        return false;
     }
   });
 
