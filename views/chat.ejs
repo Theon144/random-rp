@@ -9,22 +9,22 @@
     <script src="/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.2/mustache.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script id="messageTemplate" type="text/template">
+    <script id="template-chat" type="text/template">
       <div class="message">
         <span class="nick {{nick}}">{{nick}}</span>: <span class="content">{{message}}</span>
       </div>
     </script>
-    <script id="rollTemplate" type="text/template">
+    <script id="template-roll" type="text/template">
       <div class="message">
         <span class="nick {{nick}}">{{nick}}</span> has rolled "{{roll}}": {{#rolls}}{{.}} {{/rolls}}= {{result}}
       </div>
     </script>
-    <script id="meTemplate" type="text/template">
+    <script id="template-me" type="text/template">
       <div class="message">
         <em><span class="nick {{nick}}">{{nick}}</span> {{message}}</em>
       </div>
     </script>
-    <script id="systemTemplate" type="text/template">
+    <script id="template-system" type="text/template">
       <div class="message">
         <span class="system">-!- {{message}}</span>
       </div>

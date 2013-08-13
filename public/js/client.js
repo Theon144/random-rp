@@ -75,20 +75,7 @@ $(document).ready(function(){
   });
 
   socket.on('msg', function(data){
-    switch (data.type){
-      case "chat": 
-        $('#log').append(Mustache.render($('#messageTemplate').html(), data));
-        break;
-      case "me": 
-        $('#log').append(Mustache.render($('#meTemplate').html(), data));
-        break;
-      case "roll": 
-        $('#log').append(Mustache.render($('#rollTemplate').html(), data));
-        break;
-      case "system": 
-        $('#log').append(Mustache.render($('#systemTemplate').html(), data));
-        break;
-    }
+    $('#log').append(Mustache.render($('#template-'+data.type).html(), data));
     $('#log').scrollTop(9001);
   });
 });
