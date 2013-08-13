@@ -7,18 +7,11 @@
    ideal though, so if you have a better solution in mind, do contact me :)
 */
 
-function randomInt(value, amount){
-  if (amount < 1){
-      return null;
-  }  
-  var result = [];    
-  for (var i = 0; i < amount; i++){
-    result.push(Math.floor(Math.random()*value)+1);
-  }    
-  return result;
+function randomInt(value){
+  return (Math.floor(Math.random()*value)+1);
 }
 
-var isoperator = /^[+\-*/d]$/;
+var isoperator = /^[+\-*/df]$/;
 
 function to_rpn (expression){
   var operatorPrecedence = {
@@ -26,7 +19,8 @@ function to_rpn (expression){
     "-": 1,
     "*": 2,
     "/": 2,
-    "d": 3
+    "d": 3,
+    "f": 3,
   };
 
   var output = [];
@@ -115,14 +109,42 @@ function evaluate (expression){
           }
           break;
         case "d":
-          if ( firstOperand > 100 || secondOperand > 1000 ){
+          if ( firstOperand > 1000 || secondOperand > 10000 ){
             return {err: "Dice roll values too high" };
           }
-          var numbers = randomInt(secondOperand, firstOperand)
+
           var total = 0;
-          for(var i in numbers){
-            total += numbers[i];
-            rolls.push(numbers[i]);
+          var i = 0;
+          while (i < firstOperand){
+            var roll = randomInt(secondOperand);
+            rolls.push(roll);
+            total += roll;
+            i += 1;
+          }
+          stack.push(total);
+          break;
+        case "f":
+          if ( firstOperand > 100 ){
+            return {err: "Dice roll values too high" };
+          }
+          
+          var total = 0;
+          var i = 0;
+          while (i < firstOperand){
+            switch (randomInt(3)-2){
+              case -1:
+                rolls.push('-');
+                total -= 1;
+                break;
+              case 0:
+                rolls.push('_');
+                break;
+              case 1:
+                rolls.push('+');
+                total += 1;
+                break;
+            }
+            i += 1;
           }
           stack.push(total);
           break;
@@ -142,7 +164,8 @@ function evaluate (expression){
 }
 
 function roll(string){
-  expression = string.match(/([0-9]+|[*/+\-d()])/g);
+  string = string.replace('dF', 'f0');
+  expression = string.match(/([0-9]+|[*/+\-df()])/g);
   if (string != expression.join('')){
     return {
       err: "Invalid expression: Invalid character"
