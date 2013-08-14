@@ -31,6 +31,21 @@ room.prototype.join = function (socket){
       type: 'system',
       message: 'user "'+nick+'" has joined the room'
     });
+
+    var users = "";
+    for (var i in Room.users){
+      if ( i != Room.users.length-1 ){
+        users += Room.users[i].nick+', '
+      } else {
+        users += Room.users[i].nick
+      }
+    }
+    if (users != ""){
+      socket.emit('msg', {
+        type: "system",
+        message: "users now in room: "+users
+      });
+    }
     for (var i in Room.log){
       socket.emit('msg', Room.log[i]);
     }
