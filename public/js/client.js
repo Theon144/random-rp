@@ -4,7 +4,7 @@ function resize () {
 }
 
 function isRoll(string){
- return (string.search("^([()+/*0-9-]*([0-9]+d[0-9F]+)[()+/*0-9-]*)+$") != -1) 
+ return (string.search("^([()+/*0-9-]*([0-9]+d[0-9F]+[!]*)[()+/*0-9-]*)+$") != -1) 
  // The regex above should match everything that looks like a dice roll/expression.
  // I had a complete regex, but it was this 70+ character abomination, so I rather
  // made a relatively simpler one.

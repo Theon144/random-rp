@@ -11,7 +11,7 @@ function randomInt(value){
   return (Math.floor(Math.random()*value)+1);
 }
 
-var isoperator = /^[+\-*/df]$/;
+var isoperator = /^[+\-*/dfp]$/;
 
 function to_rpn (expression){
   var operatorPrecedence = {
@@ -21,6 +21,7 @@ function to_rpn (expression){
     "/": 2,
     "d": 3,
     "f": 3,
+    "p": 3
   };
 
   var output = [];
@@ -108,6 +109,7 @@ function evaluate (expression){
             stack.push(firstOperand / secondOperand);
           }
           break;
+        case "p":
         case "d":
           if ( firstOperand > 1000 || secondOperand > 10000 ){
             return {err: "Dice roll values too high" };
@@ -117,6 +119,13 @@ function evaluate (expression){
           var i = 0;
           while (i < firstOperand){
             var roll = randomInt(secondOperand);
+            if (token == 'p'){
+              while (roll == secondOperand){
+                rolls.push(roll);
+                total += roll;
+                roll = randomInt(secondOperand);
+              }
+            }
             rolls.push(roll);
             total += roll;
             i += 1;
@@ -165,7 +174,8 @@ function evaluate (expression){
 
 function roll(string){
   string = string.replace('dF', 'f0');
-  expression = string.match(/([0-9]+|[*/+\-df()])/g);
+  string = string.replace(/d([0-9]+)!/g, 'p$1');
+  expression = string.match(/([0-9]+|[*/+\-dfp()])/g);
   if (string != expression.join('')){
     return {
       err: "Invalid expression: Invalid character"
