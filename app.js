@@ -49,10 +49,10 @@ io.sockets.on('connection', function(socket) {
   socket.on('chat', function(data) {
     socket.get('room', function(err, room){
       if (data.action == 'join'){
-        if (Chat.rooms[room]){
-          Chat.rooms[room].leave(socket);
+        if (Chat.rooms[room]){ // If the user is already in another room
+          Chat.rooms[room].leave(socket); // make him leave it
         }
-        if (Chat.rooms[data.room]){
+        if (Chat.rooms[data.room]){ // If the room the user is trying to join exists
           var nick = data.nick.trim();
           if (nick.length < 3 || nick.length > 16 || nick.search('[a-zA-Z0-9]') == -1){
             socket.emit('chat', {
@@ -69,13 +69,14 @@ io.sockets.on('connection', function(socket) {
                 return;
               }
             }
-            socket.set('room', data.room);
-            socket.set('nick', data.nick, function(){
-              Chat.rooms[data.room].join(socket);
-            });
-            socket.emit('chat', {
-              action: "join",
-              status: "ok"
+            socket.set('room', data.room, function(){
+              socket.set('nick', data.nick, function(){
+                Chat.rooms[data.room].join(socket);
+                socket.emit('chat', {
+                  action: "join",
+                  status: "ok"
+                });
+              });
             });
           }
         } else {
