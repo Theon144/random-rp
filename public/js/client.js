@@ -49,13 +49,22 @@ $(document).ready(function(){
     $('#outMsg').val('');
     if (message != ""){
       prevMessage = message;
-      if (isRoll(message)){
-        socket.emit('msg', {
-          type: "roll",
-          message: message
-        });
+      var messageWords = message.split(' ');
+      if (isRoll(messageWords[0])){
+        if (messageWords.length == 1){
+          socket.emit('msg', {
+            type: "roll",
+            message: message
+          });
+        } else {
+          socket.emit('msg', {
+            type: "roll",
+            message: messageWords[0],
+            name: messageWords.slice(1).join(' ')
+          });
+        }
       } else {
-        if (message.slice(0, 4) == '/me '){
+        if (messageWords[0] == '/me'){
           socket.emit('msg', {
             type: "me",
             message: message.slice(4)

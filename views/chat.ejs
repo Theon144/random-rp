@@ -16,7 +16,7 @@
     </script>
     <script id="template-roll" type="text/template">
       <div class="message">
-        <span class="nick {{nick}}">{{nick}}</span> has rolled "{{roll}}": {{#rolls}}{{.}} {{/rolls}}= {{result}}
+        <span class="nick {{nick}}">{{nick}}</span> has rolled "{{roll}}"{{#name}} for '{{name}}'{{/name}}: {{#rolls}}{{.}} {{/rolls}}= {{result}}
       </div>
     </script>
     <script id="template-me" type="text/template">

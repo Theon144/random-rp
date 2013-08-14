@@ -118,7 +118,8 @@ io.sockets.on('connection', function(socket) {
                   type: 'roll',
                   roll: data.message,
                   rolls: roll.rolls,
-                  result: roll.result
+                  result: roll.result,
+                  name: data.name
                 });
               }
           }
