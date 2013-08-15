@@ -98,6 +98,7 @@ io.sockets.on('connection', function(socket) {
       if (Chat.rooms[room]){
         socket.get('nick', function (err, nick) {
           var data = {};
+          var all = false;
           data.nick = nick;
           data.type = message.type;
 
@@ -119,10 +120,11 @@ io.sockets.on('connection', function(socket) {
                 data.rolls = roll.rolls;
                 data.result = roll.result;
                 data.name = message.name;
+                all = true;
               }
               break;
           }
-          Chat.rooms[room].send(data);
+          Chat.rooms[room].send(data, all);
         });
       } else if (room) {
         socket.emit('chat', {

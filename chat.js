@@ -87,7 +87,7 @@ room.prototype.leave = function (socket){
   this.chat.update();
 }
 
-room.prototype.send = function(message){
+room.prototype.send = function(message, all){
   message.time = Date.now();
 
   if (this.log.length == 10){
@@ -96,7 +96,7 @@ room.prototype.send = function(message){
   this.log.push(message);
 
   for (var i in this.users){
-    if (this.users[i].nick != message.nick){
+    if (this.users[i].nick != message.nick || all){
       this.users[i].socket.emit('msg', message);
     }
   }
