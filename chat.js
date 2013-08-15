@@ -96,7 +96,9 @@ room.prototype.send = function(message){
   this.log.push(message);
 
   for (var i in this.users){
-    this.users[i].socket.emit('msg', message);
+    if (this.users[i].nick != message.nick){
+      this.users[i].socket.emit('msg', message);
+    }
   }
 }
 

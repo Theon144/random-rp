@@ -93,37 +93,36 @@ io.sockets.on('connection', function(socket) {
     });
   });
 
-  socket.on('msg', function(data) {
+  socket.on('msg', function(message) {
     socket.get('room', function(err, room){
       if (Chat.rooms[room]){
         socket.get('nick', function (err, nick) {
-          switch (data.type){
-            case "me":
+          var data = {};
+          data.nick = nick;
+          data.type = message.type;
+
+          switch (message.type){
             case "chat":
-              Chat.rooms[room].send({
-                nick: nick,
-                type: data.type,
-                message: data.message
-              });
+            case "me":
+              data.message = message.message;
               break;
             case "roll":
-              roll = dice.roll(data.message);
+              var roll = dice.roll(message.message);
               if (roll.err){
                 socket.emit('chat', {
                   status: 'err',
                   err: roll.err
                 });
+                return;
               } else {
-                Chat.rooms[room].send({
-                  nick: nick,
-                  type: 'roll',
-                  roll: data.message,
-                  rolls: roll.rolls,
-                  result: roll.result,
-                  name: data.name
-                });
+                data.roll = message.message;
+                data.rolls = roll.rolls;
+                data.result = roll.result;
+                data.name = message.name;
               }
+              break;
           }
+          Chat.rooms[room].send(data);
         });
       } else if (room) {
         socket.emit('chat', {

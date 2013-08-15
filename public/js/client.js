@@ -30,9 +30,10 @@ $(document).ready(function(){
 
 
   $('#join').click(function(){
+    nick = $('#nick').val();
     socket.emit('chat', {
       action: "join",
-      nick: $('#nick').val(),
+      nick: nick,
       room: roomID
     });
   });
@@ -46,37 +47,30 @@ $(document).ready(function(){
   var prevMessage = "";
   $('#send').click(function(){
     var message = $('#outMsg').val();
-    $('#outMsg').val('');
-    if (message != ""){
-      prevMessage = message;
-      var messageWords = message.split(' ');
-      if (isRoll(messageWords[0])){
-        if (messageWords.length == 1){
-          socket.emit('msg', {
-            type: "roll",
-            message: message
-          });
-        } else {
-          socket.emit('msg', {
-            type: "roll",
-            message: messageWords[0],
-            name: messageWords.slice(1).join(' ')
-          });
-        }
-      } else {
-        if (messageWords[0] == '/me'){
-          socket.emit('msg', {
-            type: "me",
-            message: message.slice(4)
-          });
-        } else {
-          socket.emit('msg', {
-            type: "chat",
-            message: message
-          });
-        }
-      }
+    if (message == ""){
+      return;
     }
+    $('#outMsg').val('');
+
+    var data = {};
+    var messageWords = message.split(' ');
+    if (isRoll(messageWords[0])){
+      data.type = "roll";
+      data.message = messageWords[0];
+      data.name = messageWords.slice(1).join(' ');
+    } else {
+      if (messageWords[0] == '/me'){
+        data.type = "me";
+        data.message = message.slice(4);
+      } else {
+        data.type = "chat";
+        data.message = message;
+      }
+      data.nick = nick;
+      $('#log').append(Mustache.render($('#template-'+data.type).html(), data));
+    }
+    socket.emit('msg', data);
+    prevMessage = message;
   });
   $('#outMsg').keypress(function (e) {
     switch (e.keyCode){
