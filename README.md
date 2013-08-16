@@ -7,12 +7,14 @@ As of now, it features only very basic functionality, but more is planned for th
 
 # To do
 (In no particular order)
-* Genre filtering
-* Character stats tracking
+* Tag filtering/searching
 * Publishing finished sessions
 * Account management
 * Password for rooms
+* Private rooms
+* Semi-persistent game sessions
+
+#To maybe do
+* Rich-text formatting (probably markdown)
 * Immersion effects (sounds, background colours...)
 * Persistent player characters
-* Rich-text formatting (probably markdown)
-* Semi-persistent game sessions
