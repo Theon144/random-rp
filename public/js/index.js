@@ -20,17 +20,28 @@ $(document).ready(function(){
   });
 
   $('#join').click(function(){
-    var room;
-    for (var i in rooms){
-      if (rooms[i].users != 0){
-        room = rooms[i];
-        break;
-      }
-    }
-    if (room == undefined){
+    if (rooms.length == 0){
       window.location.href = '/create';
     } else {
-      window.location.href = '/g/'+room.id;
+      var scores = [];
+      var total = 0;
+
+      for (var i in rooms){
+        var score = (rooms[rooms.length-1].users-rooms[i].users)+1;
+        // ^-- The score should be higher for rooms with less players
+        scores[rooms[i].id] = score;
+        total += score;
+      }
+
+      pick = Math.random()*total;
+
+      var current = 0;
+      for (var id in scores){
+        current+=scores[id];
+        if (current > pick){
+          window.location.href = '/g/'+id;
+        }
+      }
     }
   });
 });
