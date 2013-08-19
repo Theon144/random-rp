@@ -21,61 +21,52 @@ var room = function(id, chat, timeout, settings){
   this.log = [];
 }
 
-room.prototype.join = function (socket){
+room.prototype.join = function (socket, nick){
   if (this.users.length == 0)
     clearTimeout(this.timeout);
 
-  var Room = this;
-  socket.get('nick', function(err, nick){
-    Room.send({
-      type: 'system',
-      message: 'user "'+nick+'" has joined the room'
-    });
+  if (nick == undefined){
+    nick = 'Guest_'+Math.floor(Math.random()*9999);
+  }
 
-    var users = "";
-    for (var i in Room.users){
-      if ( i != Room.users.length-1 ){
-        users += Room.users[i].nick+', '
-      } else {
-        users += Room.users[i].nick
-      }
-    }
-    if (users != ""){
-      socket.emit('msg', {
-        type: "system",
-        message: "users now in room: "+users
-      });
-    }
-    for (var i in Room.log){
-      socket.emit('msg', Room.log[i]);
-    }
-    Room.users.push({
-      nick: nick,
-      socket: socket
-    });
-    Room.chat.update();
+  var Room = this;
+  Room.send({
+    type: 'system',
+    message: 'user "'+nick+'" has joined the room'
   });
+
+  var users = "";
+  for (var i in Room.users){
+    if ( i != Room.users.length-1 ){
+      users += Room.users[i].nick+', '
+    } else {
+      users += Room.users[i].nick
+    }
+  }
+  if (users != ""){
+    socket.emit('msg', {
+      type: "system",
+      message: "users now in room: "+users
+    });
+  }
+  for (var i in Room.log){
+    socket.emit('msg', Room.log[i]);
+  }
+  Room.users.push({
+    nick: nick,
+    socket: socket
+  });
+  Room.chat.update();
 }
 
 room.prototype.leave = function (socket){
-  var index = -1;
-  for (var i in this.users){
-    if (this.users[i].socket == socket){
-      index = i;
-      break;
-    }
-  }
-  if (index == -1){
-    return false;
-  }
+  var user = this.getUserBySocket(socket);
 
-  this.users.splice(index, 1);
+  this.users.splice(user.index, 1);
   var Room = this;
-  socket.get('nick', function(err, nick){
-    Room.send({
-      type: 'system',
-      message: 'user "'+nick+'" has left the room'
-    });
+  Room.send({
+    type: 'system',
+    message: 'user "'+user.nick+'" has left the room'
   });
   socket.set('room', null);
 
@@ -87,7 +78,7 @@ room.prototype.leave = function (socket){
   this.chat.update();
 }
 
-room.prototype.send = function(message, all){
+room.prototype.send = function(message, socket, all){
   message.time = Date.now();
 
   if (this.log.length == 10){
@@ -95,12 +86,26 @@ room.prototype.send = function(message, all){
   }
   this.log.push(message);
 
+  var index = this.getUserBySocket(socket).index;
   for (var i in this.users){
-    if (this.users[i].nick != message.nick || all){
+    if (i != index || all){
       this.users[i].socket.emit('msg', message);
     }
   }
 }
+
+room.prototype.getUserBySocket = function(socket){
+  for (var i in this.users){
+    if (this.users[i].socket == socket){
+      return {
+        nick: this.users[i].nick,
+        index: i
+      }
+    }
+  }
+  return false;
+}
+
 
 chat.prototype.create = function (name, tags){
   console.log('Creating room "'+name+'".');

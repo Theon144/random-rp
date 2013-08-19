@@ -71,12 +71,10 @@ io.sockets.on('connection', function(socket) {
                 }
               }
               socket.set('room', data.room, function(){
-                socket.set('nick', data.nick, function(){
-                  Chat.rooms[data.room].join(socket);
-                  socket.emit('chat', {
-                    status: "ok",
-                    action: "join"
-                  });
+                Chat.rooms[data.room].join(socket, nick);
+                socket.emit('chat', {
+                  status: "ok",
+                  action: "join"
                 });
               });
             }
@@ -99,12 +97,13 @@ io.sockets.on('connection', function(socket) {
   socket.on('msg', function(message) {
     socket.get('room', function(err, room){
       if (Chat.rooms[room]){
-        socket.get('nick', function (err, nick) {
+        var user = Chat.rooms[room].getUserBySocket(socket);
+        if (user){
           var data = {};
           var all = false;
-          data.nick = nick;
+          data.nick = user.nick;
           data.type = message.type;
-
+  
           switch (message.type){
             case "chat":
             case "me":
@@ -127,8 +126,13 @@ io.sockets.on('connection', function(socket) {
               }
               break;
           }
-          Chat.rooms[room].send(data, all);
-        });
+          Chat.rooms[room].send(data, socket, all);
+        } else {
+          socket.emit('chat', {
+            status: 'err',
+            err: "user not in room"
+          });
+        }
       } else if (room) {
         socket.emit('chat', {
           status: 'err',
