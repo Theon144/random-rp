@@ -130,7 +130,6 @@ chat.prototype.create = function (name, tags){
 };
 
 chat.prototype.remove = function (id, reason){
-  console.log(id);
   this.rooms[id].send({
     type: 'system',
     message: 'removed',
