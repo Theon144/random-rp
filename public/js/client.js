@@ -59,12 +59,20 @@ $(document).ready(function(){
       data.message = messageWords[0];
       data.name = messageWords.slice(1).join(' ');
     } else {
-      if (messageWords[0] == '/me'){
-        data.type = "me";
-        data.message = message.slice(4);
-      } else {
-        data.type = "chat";
-        data.message = message;
+      switch (messageWords[0]){
+        case '/me':
+          data.type = "me";
+          data.message = message.slice(4);
+          break;
+        case '/nick':
+          socket.emit('chat', {
+            action: 'nick',
+            nick: messageWords[1]
+          });
+          return;
+        default:
+          data.type = "chat";
+          data.message = message;
       }
       data.nick = nick;
       $('#log').append(Mustache.render($('#template-'+data.type).html(), data));
