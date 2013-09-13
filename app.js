@@ -11,7 +11,7 @@ routes.create = require('./routes/create.js').route;
 var app = express();
 
 // all environments
-app.set('port', process.env.PORT || 7777);
+app.set('port', process.env.PORT || 80);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(express.favicon());
@@ -23,6 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // development only
 if ('development' == app.get('env')) {
+  app.set('port', process.env.PORT || 7777);
   app.use(express.errorHandler());
 }
 
