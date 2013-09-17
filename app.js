@@ -95,6 +95,13 @@ io.sockets.on('connection', function(socket) {
             Chat.rooms[room].leave(socket);
           }
           break;
+        case 'nick':
+          if (Chat.rooms[room]){
+            if (data.nick){
+              Chat.rooms[room].changeNick(socket, data.nick);
+            }
+          }
+          break;
       }
     });
   });

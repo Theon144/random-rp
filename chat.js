@@ -106,6 +106,30 @@ room.prototype.getUserBySocket = function(socket){
   return false;
 }
 
+room.prototype.changeNick = function(socket, nick){
+  var user = this.getUserBySocket(socket);
+  if (user){
+    for (var i in this.users){
+      if (this.users[i].nick == nick){
+        socket.emit('chat', {
+          status: 'err',
+          err: 'error: username already in use'
+        });
+        return
+      }
+    }
+    socket.emit('chat', {
+      status: 'ok',
+      action: 'nick',
+      nick: nick
+    });
+    this.send({
+      type: 'system',
+      message: 'user '+user.nick+' is now known as '+nick
+    });
+    this.users[user.index].nick = nick;
+  }
+}
 
 chat.prototype.create = function (name, tags){
   console.log('Creating room "'+name+'".');

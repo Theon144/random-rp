@@ -24,6 +24,9 @@ $(document).ready(function(){
         case "join":
           $('#nickModal').modal('hide');
           break;
+        case "nick":
+          nick = data.nick;
+          break;
       }
     }
   });
@@ -67,7 +70,7 @@ $(document).ready(function(){
         case '/nick':
           socket.emit('chat', {
             action: 'nick',
-            nick: messageWords[1]
+            nick: message.slice(6)
           });
           return;
         default:
