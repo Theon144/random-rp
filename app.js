@@ -60,30 +60,36 @@ io.sockets.on('connection', function(socket) {
             Chat.rooms[room].leave(socket); // make him leave it
           }
           if (Chat.rooms[data.room]){ // If the room the user is trying to join exists
-            var nick = data.nick.trim();
-            if (nick.length < 3 || nick.length > 16 || nick.search('[a-zA-Z0-9]') == -1){
-              socket.emit('chat', {
-                status: "err",
-                err: "invalid nickname"
-              });
-            } else {
-              for (var i in Chat.rooms[data.room].users){
-                if (Chat.rooms[data.room].users[i].nick == nick){
-                  socket.emit('chat', {
-                    status: 'err',
-                    err: "username already in use"
-                  });
-                  return;
+            if (data.nick){
+              var nick = data.nick.trim();
+              if (nick.length < 3 || nick.length > 16 || nick.search('[a-zA-Z0-9]') == -1){
+                socket.emit('chat', {
+                  status: "err",
+                  err: "invalid nickname"
+                });
+                return;
+              } else {
+                for (var i in Chat.rooms[data.room].users){
+                  if (Chat.rooms[data.room].users[i].nick == nick){
+                    socket.emit('chat', {
+                      status: 'err',
+                      err: "username already in use"
+                    });
+                    return;
+                  }
                 }
               }
-              socket.set('room', data.room, function(){
-                Chat.rooms[data.room].join(socket, nick);
-                socket.emit('chat', {
-                  status: "ok",
-                  action: "join"
-                });
-              });
+            } else {
+              nick = 'Guest_'+Math.floor(Math.random()*9999);
             }
+            socket.set('room', data.room, function(){
+              Chat.rooms[data.room].join(socket, nick);
+              socket.emit('chat', {
+                status: "ok",
+                action: "join",
+                nick: nick
+              });
+            });
           } else {
             socket.emit('chat', {
               status: 'err',

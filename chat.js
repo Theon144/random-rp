@@ -25,10 +25,6 @@ room.prototype.join = function (socket, nick){
   if (this.users.length == 0)
     clearTimeout(this.timeout);
 
-  if (nick == undefined){
-    nick = 'Guest_'+Math.floor(Math.random()*9999);
-  }
-
   var Room = this;
   Room.send({
     type: 'system',

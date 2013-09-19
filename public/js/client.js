@@ -22,6 +22,7 @@ $(document).ready(function(){
     } else {
       switch (data.action){
         case "join":
+          nick = data.nick;
           $('#nickModal').modal('hide');
           break;
         case "nick":
