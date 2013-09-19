@@ -15,7 +15,9 @@ $(document).ready(function(){
   $(window).resize(resize);
   $('#nickModal').modal('show');
 
-  var socket = io.connect('http://'+window.location.hostname);
+  var socket = io.connect('http://'+window.location.hostname, {
+    'sync disconnect on unload': true
+  });
   socket.on('chat', function(data){
     if (data.status == 'err'){
       alert(data.err);
